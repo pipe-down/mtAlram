@@ -22,7 +22,15 @@ namespace mtAlram
         {
             InitializeComponent();
             loadKeyValue();
-            Bot = new TelegramBotClient(_token.ToString());
+            try
+            {
+                Bot = new TelegramBotClient(_token.ToString());
+            } catch(Exception ex)
+            {
+                MessageBox.Show("토큰이 잘못되었습니다.");
+                Environment.Exit(0);
+            }
+            
         }
 
         public const int WM_LBUTTONDOWN = 0x0201;
@@ -86,16 +94,25 @@ namespace mtAlram
             string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
             path = Path.GetDirectoryName(path) + "\\keyvalue.ini";
 
-            // 쓰기 - long WritePrivateProfileString(string section, string key, string val, string filePath);
-            //WritePrivateProfileString("SECTION", "TOKEN", "myToken", path);
-            //WritePrivateProfileString("SECTION", "CHAT_ID", "myChatId", path);
 
             // 읽기 - int GetPrivateProfileString(string section, string key, string def, StringBuilder retVal, int size, string filePath);
-            int result1 = GetPrivateProfileString("SECTION", "TOKEN", "def", _token, 64, path); // key 있음
-            int result2 = GetPrivateProfileString("SECTION", "CHAT_ID", "def", _chatId, 32, path); // key 없음
-            int result3 = GetPrivateProfileString("SECTION", "UCWINDOW", "def", _ucWindow, 64, path); // key 없음
-            int result4 = GetPrivateProfileString("SECTION", "KAKAOWINDOW", "def", _kakaoWindow, 64, path); // key 없음
-            int result5 = GetPrivateProfileString("SECTION", "DELAY", "def", _delayValue, 64, path); // key 없음
+            GetPrivateProfileString("SECTION", "TOKEN", "def", _token, 64, path); // key 있음
+            GetPrivateProfileString("SECTION", "CHAT_ID", "def", _chatId, 32, path); // key 없음
+            GetPrivateProfileString("SECTION", "UCWINDOW", "def", _ucWindow, 64, path); // key 없음
+            GetPrivateProfileString("SECTION", "KAKAOWINDOW", "def", _kakaoWindow, 64, path); // key 없음
+            GetPrivateProfileString("SECTION", "DELAY", "def", _delayValue, 64, path); // key 없음
+
+            if(_token.ToString().Equals("def") || _chatId.ToString().Equals("def") || _ucWindow.ToString().Equals("def") || _kakaoWindow.ToString().Equals("def") || _delayValue.ToString().Equals("def"))
+            {
+                // 쓰기 - long WritePrivateProfileString(string section, string key, string val, string filePath);
+                WritePrivateProfileString("SECTION", "TOKEN", "myToken", path);
+                WritePrivateProfileString("SECTION", "CHAT_ID", "myChatId", path);
+                WritePrivateProfileString("SECTION", "UCWINDOW", "", path);
+                WritePrivateProfileString("SECTION", "KAKAOWINDOW", "", path);
+                WritePrivateProfileString("SECTION", "DELAY", "30000", path);
+                MessageBox.Show("keyvalue.ini에 값을 기재해 주세요.");
+                Environment.Exit(0);
+            }
 
             //int result = GetPrivateProfileString("SECTION", "KEY2", "def", retVal3, 32, "C:\none.ini"); // ini 파일 없음
         }
@@ -203,6 +220,12 @@ namespace mtAlram
             try
             {
                 string startupPath = Application.StartupPath;
+
+                if(Directory.Exists(startupPath + "\\img")==false)
+                {
+                    Directory.CreateDirectory(startupPath + "\\img");
+                }
+
                 bitmap.Save(startupPath + "\\img\\scr.bmp");
                 Delay(delayValue);
                 FileStream fileStream = File.Open(startupPath + "\\img\\scr.bmp", FileMode.Open);
@@ -277,14 +300,6 @@ namespace mtAlram
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            /*
-            if (this.WindowState != FormWindowState.Minimized)
-                return;
-            this.Visible = false;
-            this.ShowIcon = false;
-            this.notifyIcon1.Visible = true;
-            */
-
             if (FormWindowState.Minimized == WindowState)
             {
                 notifyIcon1.Visible = true; // tray icon 표시
@@ -295,13 +310,10 @@ namespace mtAlram
                 notifyIcon1.Visible = false;
                 ShowInTaskbar = true; // 작업 표시줄 표시
             }
-
         }
 
         private void NotifyIcon1_DoubleClick(object sender, MouseEventArgs e)
         {
-            //this.Visible = true;
-            //this.ShowIcon = true;
             notifyIcon1.Visible = false;
             Show();
             IntPtr hwnd_return = FindWindow(null, "팝업모니터링");
