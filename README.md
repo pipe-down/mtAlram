@@ -7,7 +7,7 @@
 --------
 <br>
 --------
-# 주의사항
+# 주의사항 <br>
 프로그램 동작전 keyvalue.ini 파일을 생성해주시고 <br>
 [SECTION] <br>
 TOKEN=TOKEN 값 <br>
