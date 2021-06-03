@@ -251,7 +251,6 @@ namespace mtAlram
         {
             while (true)
             {
-                //Thread.Sleep(500);
                 if (checkprocess)
                 {
                     IntPtr window = FindWindow(_ucWindow.ToString(), null);
@@ -281,8 +280,8 @@ namespace mtAlram
         private void metroButton2_Click(object sender, EventArgs e)
         {
             checkprocess = false;
-            Delay(delayValue);
-            metroListView1.Items.Clear();
+            Delay(100);
+            Environment.Exit(0);
         }
 
         private void metroButton3_Click(object sender, EventArgs e)
@@ -292,10 +291,20 @@ namespace mtAlram
 
         private void Btn_KeyEvent(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode != Keys.Escape)
-                return;
-            checkprocess = false;
-            metroListView1.Items.Add("시스템멈춤!!!");
+            switch(e.KeyCode)
+            {
+                case Keys.Escape:
+                    checkprocess = false;
+                    break;
+
+                case Keys.C:
+                    metroListView1.Items.Clear();
+                    break;
+
+                case Keys.S:
+                    metroButton1_Click(sender, e);
+                    break;
+            }
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -323,5 +332,6 @@ namespace mtAlram
                 SetForegroundWindow(hwnd_return);
             }
         }
+
     }
 }

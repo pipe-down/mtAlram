@@ -108,8 +108,10 @@
             this.Controls.Add(this.metroButton1);
             this.Controls.Add(this.pictureBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.Name = "Form1";
             this.Text = "팝업모니터링";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Btn_KeyEvent);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
